@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\MembershipController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,8 +17,9 @@ use App\Http\Controllers\Auth\RegisterController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['prefix' => 'memberships', 'middleware' => ['auth:sanctum']], function () {
+    Route::post('/store', [MembershipController::class, 'store'])->name('memberships.store');
 });
 
 Route::post('/register', [RegisterController::class, 'create']);
+Route::post('/login', [RegisterController::class, 'login']);
