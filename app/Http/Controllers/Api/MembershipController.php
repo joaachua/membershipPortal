@@ -116,4 +116,20 @@ class MembershipController extends Controller
             ], 500);
         }
     }
+
+    public function update(Request $request) {
+
+    }
+
+    public function destroy(Request $request) {
+
+    }
+    
+    public function view(Request $request) {
+
+    }
+    
+    public function index(Request $request) {
+
+    }
 }
