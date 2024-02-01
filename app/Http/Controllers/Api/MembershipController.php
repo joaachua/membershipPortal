@@ -118,18 +118,34 @@ class MembershipController extends Controller
     }
 
     public function update(Request $request) {
+        try {
 
+        } catch (\Exception $e) {
+
+        }
     }
 
     public function destroy(Request $request) {
+        try {
 
+        } catch (\Exception $e) {
+            
+        }
     }
     
     public function view(Request $request) {
+        try {
 
+        } catch (\Exception $e) {
+            
+        }
     }
     
     public function index(Request $request) {
+        try {
 
+        } catch (\Exception $e) {
+            
+        }
     }
 }
