@@ -24,7 +24,7 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    protected function create(Request $request)
+    protected function register(Request $request)
     {
         try {
             $rules = [
@@ -51,10 +51,8 @@ class RegisterController extends Controller
             $validator = Validator::make($request->all(), $rules, $messages);
 
             if ($validator->fails()) {
-                return response()->json([
-                    "success" => false,
-                    "message" => $validator->errors()->all(),
-                ], 422);
+                $fieldErrors = $validator->errors()->toArray();
+                return $this->errorResponse('Validation failed', 422, $fieldErrors);
             }
 
             DB::beginTransaction();
@@ -84,24 +82,14 @@ class RegisterController extends Controller
 
                 DB::commit();
 
-                return response()->json([
-                    "success" => true,
-                    "message" => 'User successfully created.',
-                    "data" => $user
-                ], 201);
+                return $this->successResponse('User created successfully.', 200, $user);
             } catch (\Exception $e) {
                 DB::rollBack();
 
-                return response()->json([
-                    "success" => false,
-                    "message" => 'Something went wrong.'
-                ], 500);
+                return $this->errorResponse('Something went wrong.', 500);
             }
         } catch (\Exception $e) {
-            return response()->json([
-                "success" => false,
-                "message" => 'Something went wrong.'
-            ], 500);
+            return $this->errorResponse('Something went wrong.', 500);
         }
     }
 
@@ -113,37 +101,23 @@ class RegisterController extends Controller
             ]);
     
             if (Auth::attempt($credentials)) {
-                $user = Auth::user();
-                $token = $user->createToken('api-token')->plainTextToken;
+                $data = [
+                    'token' => Auth::user()->createToken('api-token')->plainTextToken,
+                    'user'  => Auth::user()
+                ];
     
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Login successfully.',
-                    'data' => [
-                        'user' => $user,
-                        'token' => $token,
-                    ],
-                ]);
+                return $this->successResponse('User created successfully.', 200, $data);
             } else {
                 throw new AuthenticationException();
             }
         } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->errors(),
-            ], 422);
+            return $this->errorResponse('Validation failed', 422, $e->errors());
         } catch (AuthenticationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid credentials.',
-            ], 401);
+            return $this->errorResponse('Invalid credentials.', 401);
         } catch (\Exception $e) {
             \Log::error($e);
     
-            return response()->json([
-                'success' => false,
-                'message' => 'Something went wrong.',
-            ], 500);
+            return $this->errorResponse('Something went wrong.', 500);
         }
     }
 }
