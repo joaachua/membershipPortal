@@ -121,6 +121,7 @@ class MembershipController extends Controller
         try {
 
         } catch (\Exception $e) {
+            
         }
     }
 
